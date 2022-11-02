@@ -3,11 +3,14 @@ import ImageIcon from "@mui/icons-material/Image";
 import NewspaperIcon from "@mui/icons-material/Newspaper";
 import VideoCameraBackIcon from "@mui/icons-material/VideoCameraBack";
 import { Avatar } from "@mui/material";
-import React from "react";
+import React, { useState } from "react";
 import "./Feed.css";
 import InputOption from "./InputOption";
+import Post from "./Post";
 
 function Feed() {
+  const [posts, setPosts] = useState([]);
+
   return (
     <div className="feed">
       <div className="feed-input-container">
@@ -29,6 +32,22 @@ function Feed() {
           color="D57D09"
         />
       </div>
+
+      {/* Posts Section */}
+      {/* {
+        posts.map((post) => (
+          <Post
+            name="Kartik Tyagi"
+            description="This is a test description"
+            message="This is a test message"
+          />
+        ))
+      } */}
+      <Post
+        name="Kartik Tyagi"
+        description="This is a test description"
+        message="This is a test message"
+      />
     </div>
   );
 }
