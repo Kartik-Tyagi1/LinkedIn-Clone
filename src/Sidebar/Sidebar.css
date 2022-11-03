@@ -1,7 +1,7 @@
 .sidebar {
     position: sticky;
     top: 80px;
-    flex: 0.195; /* Flex is set in the app body, we set flex amount here */
+    flex: 0.8; /* Flex is set in the app body, we set flex amount here */
     border-radius: 10px;
     text-align: center;
     height: fit-content;

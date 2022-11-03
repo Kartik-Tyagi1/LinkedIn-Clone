@@ -1,5 +1,5 @@
 import { Avatar } from "@mui/material";
-import React from "react";
+import React, { forwardRef } from "react";
 import InputOption from "./InputOption";
 import "./Post.css";
 
@@ -7,12 +7,16 @@ import InsertCommentIcon from "@mui/icons-material/InsertComment";
 import LoopIcon from "@mui/icons-material/Loop";
 import SendIcon from "@mui/icons-material/Send";
 import ThumbUpOffAltIcon from "@mui/icons-material/ThumbUpOffAlt";
+import { useSelector } from "react-redux";
+import { selectUser } from "../features/userSlice";
 
-function Post({ name, description, message, photoUrl }) {
+const Post = forwardRef(({ name, description, message, photoUrl }, ref) => {
+  const user = useSelector(selectUser);
+
   return (
-    <div className="post">
+    <div ref={ref} className="post">
       <div className="post-header">
-        <Avatar />
+        <Avatar src={photoUrl}>{name[0]}</Avatar>
         <div className="post-info">
           <h2>{name}</h2>
           <p>{description}</p>
@@ -29,6 +33,6 @@ function Post({ name, description, message, photoUrl }) {
       </div>
     </div>
   );
-}
+});
 
 export default Post;

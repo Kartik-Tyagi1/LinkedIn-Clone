@@ -2,6 +2,7 @@
     background-color: #f3f2ef;
     display: flex;
     flex-direction: column;
+    align-items: center;
 }
 
 .app-body {
@@ -9,4 +10,5 @@
     margin-top: 15px;
     margin-left: 15px;
     margin-right: 15px;
+    width: auto;
 }

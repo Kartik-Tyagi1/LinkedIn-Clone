@@ -12,6 +12,9 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
+import FlipMove from "react-flip-move";
+import { useSelector } from "react-redux";
+import { selectUser } from "../features/userSlice";
 import { db } from "../Firebase/Firebase";
 import "./Feed.css";
 import InputOption from "./InputOption";
@@ -20,6 +23,8 @@ import Post from "./Post";
 function Feed() {
   const [posts, setPosts] = useState([]);
   const [input, setInput] = useState("");
+
+  const user = useSelector(selectUser);
 
   // Get posts from firestore db
   const fetchPosts = async () => {
@@ -40,10 +45,10 @@ function Feed() {
     e.preventDefault();
     try {
       const docRef = await addDoc(collection(db, "Posts"), {
-        name: "Kartik Tyagi",
-        description: "This is a test",
+        name: user.displayName,
+        description: user.email,
         message: input,
-        photoUrl: "",
+        photoUrl: user.photoUrl || "",
         timestamp: serverTimestamp(),
       });
       console.log("Document written with ID: ", docRef.id);
@@ -68,7 +73,9 @@ function Feed() {
   return (
     <div className="feed">
       <div className="feed-input-container">
-        <Avatar className="feed-input-container-avatar" />
+        <Avatar className="feed-input-container-avatar">
+          {user?.displayName[0].toUpperCase()}
+        </Avatar>
         <div className="feed-input">
           <form>
             <input
@@ -95,15 +102,17 @@ function Feed() {
       </div>
 
       {/* Posts Section - the key allows react to know which entries are new and to only render those and not re render the whole list */}
-      {posts.map(({ id, data: { name, description, message, photoUrl } }) => (
-        <Post
-          key={id}
-          name={name}
-          description={description}
-          message={message}
-          photoUrl={photoUrl}
-        />
-      ))}
+      <FlipMove>
+        {posts.map(({ id, data: { name, description, message, photoUrl } }) => (
+          <Post
+            key={id}
+            name={name}
+            description={description}
+            message={message}
+            photoUrl={photoUrl}
+          />
+        ))}
+      </FlipMove>
     </div>
   );
 }
