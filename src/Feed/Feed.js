@@ -3,13 +3,67 @@ import ImageIcon from "@mui/icons-material/Image";
 import NewspaperIcon from "@mui/icons-material/Newspaper";
 import VideoCameraBackIcon from "@mui/icons-material/VideoCameraBack";
 import { Avatar } from "@mui/material";
-import React, { useState } from "react";
+import {
+  addDoc,
+  collection,
+  getDocs,
+  orderBy,
+  query,
+  serverTimestamp,
+} from "firebase/firestore";
+import React, { useEffect, useState } from "react";
+import { db } from "../Firebase/Firebase";
 import "./Feed.css";
 import InputOption from "./InputOption";
 import Post from "./Post";
 
 function Feed() {
   const [posts, setPosts] = useState([]);
+  const [input, setInput] = useState("");
+
+  // Get posts from firestore db
+  const fetchPosts = async () => {
+    await getDocs(
+      query(collection(db, "Posts"), orderBy("timestamp", "desc"))
+    ).then((querySnapshot) =>
+      setPosts(
+        querySnapshot.docs.map((doc) => ({
+          data: doc.data(),
+          id: doc.id,
+        }))
+      )
+    );
+  };
+
+  // Add post to firestore db
+  const addPost = async (e) => {
+    e.preventDefault();
+    try {
+      const docRef = await addDoc(collection(db, "Posts"), {
+        name: "Kartik Tyagi",
+        description: "This is a test",
+        message: input,
+        photoUrl: "",
+        timestamp: serverTimestamp(),
+      });
+      console.log("Document written with ID: ", docRef.id);
+    } catch (e) {
+      console.error("Error adding document: ", e);
+    }
+
+    setInput("");
+  };
+
+  // useEffect hook lets us fire off code when the feed component loads
+  // The dependency list lets us fire off again if one of those dependency changes
+  useEffect(() => {
+    fetchPosts();
+  }, [posts]);
+
+  // Click functions return an event which is trackable
+  const sendPost = (e) => {
+    addPost(e);
+  };
 
   return (
     <div className="feed">
@@ -17,8 +71,15 @@ function Feed() {
         <Avatar className="feed-input-container-avatar" />
         <div className="feed-input">
           <form>
-            <input type="text" placeholder="Start a post" />
-            <button type="submit">Send</button>
+            <input
+              type="text"
+              placeholder="Start a post"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+            />
+            <button onClick={sendPost} type="submit">
+              Send
+            </button>
           </form>
         </div>
       </div>
@@ -33,21 +94,16 @@ function Feed() {
         />
       </div>
 
-      {/* Posts Section */}
-      {/* {
-        posts.map((post) => (
-          <Post
-            name="Kartik Tyagi"
-            description="This is a test description"
-            message="This is a test message"
-          />
-        ))
-      } */}
-      <Post
-        name="Kartik Tyagi"
-        description="This is a test description"
-        message="This is a test message"
-      />
+      {/* Posts Section - the key allows react to know which entries are new and to only render those and not re render the whole list */}
+      {posts.map(({ id, data: { name, description, message, photoUrl } }) => (
+        <Post
+          key={id}
+          name={name}
+          description={description}
+          message={message}
+          photoUrl={photoUrl}
+        />
+      ))}
     </div>
   );
 }
